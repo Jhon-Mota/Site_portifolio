@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jhonathan Almeida — Analista de Dados</title>
+<meta name="description" content="Jhonathan Almeida — Analista de Dados. Dashboards em Power BI, automação de processos e integrações de dados.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================
+     TOKENS
+     ============================================ */
+  :root{
+    --bg: #0a0a0f;
+    --bg-elevated: #111117;
+    --bg-elevated-2: #16161d;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.16);
+    --text-primary: #ECECF1;
+    --text-secondary: #9a9aa5;
+    --text-tertiary: #63636e;
+    --accent: #35d0a0;
+    --accent-strong: #59e6bb;
+    --accent-soft: rgba(53,208,160,0.10);
+    --accent-border: rgba(53,208,160,0.35);
+
+    --font-display: 'Outfit', sans-serif;
+    --font-body: 'Source Sans 3', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --nav-height: 76px;
+    --container: 1120px;
+  }
+
+  /* ============================================
+     RESET
+     ============================================ */
+  *, *::before, *::after{ box-sizing: border-box; margin: 0; padding: 0; }
+  html{ scroll-behavior: smooth; }
+  body{
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  img, svg{ display:block; max-width: 100%; }
+  a{ color: inherit; text-decoration: none; }
+  ul{ list-style: none; }
+  button{ font: inherit; background:none; border:none; color:inherit; cursor:pointer; }
+
+  a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  section{ scroll-margin-top: var(--nav-height); }
+
+  .container{
+    width: 100%;
+    max-width: var(--container);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before{
+    content: "";
+    width: 16px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1, h2, h3{
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .section-head{
+    max-width: 640px;
+    margin-bottom: 56px;
+  }
+  .section-head h2{
+    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    margin-top: 14px;
+  }
+  .section-head p{
+    margin-top: 14px;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    max-width: 54ch;
+  }
+
+  section{ padding: 108px 0; }
+  @media (max-width: 640px){
+    section{ padding: 76px 0; }
+  }
+
+  /* ============================================
+     REVEAL ON SCROLL
+     ============================================ */
+  .reveal{
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  }
+  .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    .reveal{ opacity: 1 !important; transform: none !important; transition: none !important; }
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
+  }
+
+  /* ============================================
+     BACKGROUND GRID TEXTURE (hero only)
+     ============================================ */
+  .grid-texture{
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse 70% 60% at 30% 20%, black 40%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* ============================================
+     NAVBAR
+     ============================================ */
+  .navbar{
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--nav-height);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.4s var(--ease), border-color 0.4s var(--ease), backdrop-filter 0.4s var(--ease);
+  }
+  .navbar.scrolled{
+    background: rgba(10,10,15,0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .wordmark{
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .wordmark span{ color: var(--accent); }
+
+  .nav-links{
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+  .nav-links a{
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    position: relative;
+    padding: 4px 0;
+    transition: color 0.25s var(--ease);
+  }
+  .nav-links a:hover{ color: var(--text-primary); }
+  .nav-links a::after{
+    content:"";
+    position: absolute;
+    left:0; bottom:-2px;
+    width: 0%; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s var(--ease);
+  }
+  .nav-links a:hover::after{ width: 100%; }
+
+  .nav-cta{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .nav-icon-btn{
+    width: 38px; height: 38px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    transition: border-color 0.25s var(--ease), color 0.25s var(--ease), background-color 0.25s var(--ease);
+  }
+  .nav-icon-btn:hover{
+    border-color: var(--accent-border);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .nav-icon-btn svg{ width: 18px; height: 18px; }
+
+  .menu-toggle{
+    display: none;
+    width: 40px; height: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .menu-toggle svg{ width: 20px; height: 20px; }
+
+  .mobile-panel{
+    position: fixed;
+    top: var(--nav-height);
+    left: 0; right: 0;
+    background: rgba(10,10,15,0.98);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 22px 24px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transform: translateY(-12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+    z-index: 99;
+  }
+  .mobile-panel.open{
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .mobile-panel a{
+    padding: 14px 4px;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-panel .mobile-social{
+    display: flex;
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  @media (max-width: 860px){
+    .nav-links{ display: none; }
+    .menu-toggle{ display: flex; }
+  }
+
+  /* ============================================
+     HERO
+     ============================================ */
+  .hero{
+    position: relative;
+    padding-top: calc(var(--nav-height) + 96px);
+    padding-bottom: 96px;
+    overflow: hidden;
+  }
+  .hero-inner{
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  .axis-rail{
+    position: relative;
+    height: 100%;
+    min-height: 380px;
+  }
+  .axis-rail::before{
+    content:"";
+    position: absolute;
+    top:0; bottom: 40px; left: 11px;
+    width: 1px;
+    background: var(--border-strong);
+  }
+  .axis-rail::after{
+    content:"";
+    position: absolute;
+    top:0; bottom: 40px; left: 0px;
+    width: 12px;
+    background-image: repeating-linear-gradient(to bottom, var(--border-strong) 0, var(--border-strong) 1px, transparent 1px, transparent 28px);
+  }
+  @media (max-width: 860px){
+    .hero-inner{ grid-template-columns: 1fr; }
+    .axis-rail{ display: none; }
+  }
+
+  .hero-content{
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(260px, 380px);
+    gap: 56px;
+    align-items: center;
+  }
+  @media (max-width: 980px){
+    .hero-content{ grid-template-columns: 1fr; }
+  }
+
+  .hero-text h1{
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    line-height: 1.04;
+    margin-top: 18px;
+  }
+  .hero-role{
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    margin-top: 14px;
+    letter-spacing: 0.01em;
+  }
+  .hero-role span{ color: var(--accent); }
+
+  .hero-lead{
+    margin-top: 24px;
+    font-size: 1.12rem;
+    color: var(--text-secondary);
+    max-width: 52ch;
+  }
+
+  .hero-actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 38px;
+  }
+
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 22px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: transform 0.3s var(--ease), background-color 0.3s var(--ease), border-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  }
+  .btn svg{ width: 16px; height: 16px; }
+  .btn-primary{
+    background: var(--accent);
+    color: #06110d;
+  }
+  .btn-primary:hover{
+    background: var(--accent-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -10px rgba(53,208,160,0.55);
+  }
+  .btn-ghost{
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
+    background: transparent;
+  }
+  .btn-ghost:hover{
+    border-color: var(--accent-border);
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* hero chart signature */
+  .hero-visual{
+    justify-self: center;
+  }
+  .chart-caption{
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-top: 10px;
+    letter-spacing: 0.08em;
+  }
+  .bar{ transform-origin: bottom; animation: growBar 1s var(--ease) both; }
+  .bar:nth-child(1){ animation-delay: 0.15s; }
+  .bar:nth-child(2){ animation-delay: 0.28s; }
+  .bar:nth-child(3){ animation-delay: 0.41s; }
+  .bar:nth-child(4){ animation-delay: 0.54s; }
+  .bar:nth-child(5){ animation-delay: 0.67s; }
+  .bar:nth-child(6){ animation-delay: 0.80s; }
+  @keyframes growBar{
+    from{ transform: scaleY(0); opacity: 0; }
+    to{ transform: scaleY(1); opacity: 1; }
+  }
+  .trend-line{
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: drawLine 1.4s var(--ease) 0.9s forwards;
+  }
+  @keyframes drawLine{ to{ stroke-dashoffset: 0; } }
+  .pulse-dot{ animation: pulseDot 2.4s ease-in-out infinite; animation-delay: 2.2s; }
+  @keyframes pulseDot{
+    0%, 100%{ opacity: 1; }
+    50%{ opacity: 0.45; }
+  }
+
+  /* ============================================
+     ABOUT
+     ============================================ */
+  .about-grid{
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 64px;
+    align-items: start;
+  }
+  @media (max-width: 860px){
+    .about-grid{ grid-template-columns: 1fr; gap: 40px; }
+  }
+  .about-text p{
+    color: var(--text-secondary);
+    font-size: 1.06rem;
+    max-width: 58ch;
+  }
+  .about-text p + p{ margin-top: 18px; }
+
+  .badge-panel-title{
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 16px;
+  }
+  .badge-list{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .badge{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 7px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    background: var(--bg-elevated);
+    transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+  }
+  .badge:hover{
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  /* ============================================
+     PROJECTS
+     ============================================ */
+  .project-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 980px){
+    .project-grid{ grid-template-columns: 1fr; }
+  }
+
+  .project-card{
+    position: relative;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px 26px 26px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .project-card:hover{
+    transform: translateY(-6px);
+    border-color: var(--accent-border);
+    box-shadow: 0 24px 50px -24px rgba(0,0,0,0.6), 0 0 0 1px rgba(53,208,160,0.08);
+  }
+  .project-card::before{
+    content:"";
+    position: absolute;
+    top: 0; left: 26px; right: 26px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+  }
+  .project-card:hover::before{ opacity: 1; }
+
+  .project-icon{
+    width: 42px; height: 42px;
+    border-radius: 9px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .project-icon svg{ width: 22px; height: 22px; }
+
+  .project-card h3{
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  .project-card p{
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    flex-grow: 1;
+  }
+
+  .stack-row{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 22px 0 22px;
+  }
+  .stack-tag{
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    padding: 5px 9px;
+    border-radius: 4px;
+    background: var(--bg-elevated-2);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border);
+  }
+
+  .project-link{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+  .project-link svg{
+    width: 14px; height: 14px;
+    transition: transform 0.3s var(--ease);
+  }
+  .project-card:hover .project-link{ color: var(--accent); }
+  .project-card:hover .project-link svg{ transform: translate(3px, -3px); }
+
+  /* ============================================
+     EXPERIENCE
+     ============================================ */
+  .timeline{
+    position: relative;
+    padding-left: 32px;
+    border-left: 1px solid var(--border);
+    max-width: 720px;
+  }
+  .timeline-item{
+    position: relative;
+    padding-bottom: 8px;
+  }
+  .timeline-item::before{
+    content:"";
+    position: absolute;
+    left: -37px; top: 4px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+  .timeline-period{
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .timeline-item h3{
+    font-size: 1.15rem;
+    margin-top: 8px;
+  }
+  .timeline-company{
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    margin-top: 4px;
+  }
+  .timeline-item p.desc{
+    color: var(--text-secondary);
+    margin-top: 12px;
+    max-width: 58ch;
+    font-size: 0.98rem;
+  }
+
+  .knowledge-block{
+    margin-top: 64px;
+    max-width: 720px;
+  }
+  .knowledge-block .badge-panel-title{ margin-bottom: 18px; }
+
+  /* ============================================
+     CONTACT / FOOTER
+     ============================================ */
+  .contact{
+    padding-top: 108px;
+    padding-bottom: 0;
+  }
+  .contact-panel{
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: linear-gradient(180deg, var(--bg-elevated), var(--bg));
+    padding: 64px 48px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-panel::after{
+    content:"";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 26px 26px;
+    mask-image: radial-gradient(ellipse 60% 80% at 90% 10%, black 30%, transparent 100%);
+    pointer-events: none;
+  }
+  @media (max-width: 780px){
+    .contact-panel{ grid-template-columns: 1fr; padding: 44px 26px; }
+  }
+  .contact-panel h2{
+    font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+    margin-top: 14px;
+  }
+  .contact-panel p{
+    margin-top: 18px;
+    color: var(--text-secondary);
+    max-width: 46ch;
+    font-size: 1.02rem;
+  }
+  .contact-links{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+  }
+  .contact-link{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .contact-link:hover{
+    border-color: var(--accent-border);
+    transform: translateX(4px);
+  }
+  .contact-link-label{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.98rem;
+  }
+  .contact-link-label svg{ width: 18px; height: 18px; color: var(--accent); }
+  .contact-link .arrow{ width: 14px; height: 14px; color: var(--text-tertiary); }
+
+  .footer-bottom{
+    margin-top: 48px;
+    padding: 32px 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--text-tertiary);
+    font-size: 0.84rem;
+  }
+  .footer-bottom .footer-mark{
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 640px){
+    .container{ padding: 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     NAVBAR
+     ============================================ -->
+<nav class="navbar" id="navbar">
+  <div class="container nav-inner">
+    <a href="#" class="wordmark">JA<span>.</span></a>
+
+    <div class="nav-links">
+      <a href="#sobre">Sobre</a>
+      <a href="#projetos">Projetos</a>
+      <a href="#experiencia">Experiência</a>
+      <a href="#contato">Contato</a>
+    </div>
+
+    <div class="nav-cta">
+      <a class="nav-icon-btn" href="https://www.linkedin.com/in/jhonathan-almeida" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6.94 8.5H3.56V20.4H6.94V8.5Z" fill="currentColor"/><path d="M5.25 7.02C6.35 7.02 7.24 6.13 7.24 5.03C7.24 3.94 6.35 3.05 5.25 3.05C4.15 3.05 3.26 3.94 3.26 5.03C3.26 6.13 4.15 7.02 5.25 7.02Z" fill="currentColor"/><path d="M13.02 8.5H9.79V20.4H13.13V14.3C13.13 12.66 13.44 11.07 15.47 11.07C17.47 11.07 17.5 12.94 17.5 14.4V20.4H20.84V13.73C20.84 10.85 20.22 8.23 16.86 8.23C15.25 8.23 14.17 9.11 13.72 9.94H13.68L13.02 8.5Z" fill="currentColor"/></svg>
+      </a>
+      <a class="nav-icon-btn" href="https://github.com/Jhon-Mota" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.58 2 12.21C2 16.72 4.87 20.54 8.84 21.9C9.34 22 9.52 21.68 9.52 21.41C9.52 21.17 9.51 20.31 9.51 19.41C6.73 20.02 6.14 18.15 6.14 18.15C5.68 16.96 5.03 16.65 5.03 16.65C4.12 16.02 5.1 16.03 5.1 16.03C6.1 16.1 6.63 17.08 6.63 17.08C7.5 18.62 8.92 18.17 9.48 17.92C9.57 17.27 9.83 16.83 10.11 16.58C7.9 16.33 5.57 15.46 5.57 11.55C5.57 10.42 5.97 9.5 6.65 8.78C6.54 8.53 6.19 7.47 6.75 6.04C6.75 6.04 7.62 5.76 9.5 7.06C10.29 6.84 11.15 6.72 12 6.72C12.85 6.72 13.71 6.84 14.5 7.06C16.38 5.76 17.25 6.04 17.25 6.04C17.81 7.47 17.46 8.53 17.35 8.78C18.03 9.5 18.43 10.42 18.43 11.55C18.43 15.47 16.1 16.33 13.87 16.57C14.23 16.88 14.55 17.5 14.55 18.44C14.55 19.79 14.54 20.97 14.54 21.41C14.54 21.68 14.72 22.01 15.23 21.9C19.19 20.53 22 16.72 22 12.21C22 6.58 17.52 2 12 2Z" fill="currentColor"/></svg>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false">
+        <svg id="menuIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7H20" stroke-linecap="round"/><path d="M4 12H20" stroke-linecap="round"/><path d="M4 17H20" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-panel" id="mobilePanel">
+    <a href="#sobre">Sobre</a>
+    <a href="#projetos">Projetos</a>
+    <a href="#experiencia">Experiência</a>
+    <a href="#contato">Contato</a>
+    <div class="mobile-social">
+      <a class="nav-icon-btn" href="https://www.linkedin.com/in/jhonathan-almeida" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6.94 8.5H3.56V20.4H6.94V8.5Z" fill="currentColor"/><path d="M5.25 7.02C6.35 7.02 7.24 6.13 7.24 5.03C7.24 3.94 6.35 3.05 5.25 3.05C4.15 3.05 3.26 3.94 3.26 5.03C3.26 6.13 4.15 7.02 5.25 7.02Z" fill="currentColor"/><path d="M13.02 8.5H9.79V20.4H13.13V14.3C13.13 12.66 13.44 11.07 15.47 11.07C17.47 11.07 17.5 12.94 17.5 14.4V20.4H20.84V13.73C20.84 10.85 20.22 8.23 16.86 8.23C15.25 8.23 14.17 9.11 13.72 9.94H13.68L13.02 8.5Z" fill="currentColor"/></svg>
+      </a>
+      <a class="nav-icon-btn" href="https://github.com/Jhon-Mota" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.58 2 12.21C2 16.72 4.87 20.54 8.84 21.9C9.34 22 9.52 21.68 9.52 21.41C9.52 21.17 9.51 20.31 9.51 19.41C6.73 20.02 6.14 18.15 6.14 18.15C5.68 16.96 5.03 16.65 5.03 16.65C4.12 16.02 5.1 16.03 5.1 16.03C6.1 16.1 6.63 17.08 6.63 17.08C7.5 18.62 8.92 18.17 9.48 17.92C9.57 17.27 9.83 16.83 10.11 16.58C7.9 16.33 5.57 15.46 5.57 11.55C5.57 10.42 5.97 9.5 6.65 8.78C6.54 8.53 6.19 7.47 6.75 6.04C6.75 6.04 7.62 5.76 9.5 7.06C10.29 6.84 11.15 6.72 12 6.72C12.85 6.72 13.71 6.84 14.5 7.06C16.38 5.76 17.25 6.04 17.25 6.04C17.81 7.47 17.46 8.53 17.35 8.78C18.03 9.5 18.43 10.42 18.43 11.55C18.43 15.47 16.1 16.33 13.87 16.57C14.23 16.88 14.55 17.5 14.55 18.44C14.55 19.79 14.54 20.97 14.54 21.41C14.54 21.68 14.72 22.01 15.23 21.9C19.19 20.53 22 16.72 22 12.21C22 6.58 17.52 2 12 2Z" fill="currentColor"/></svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ============================================
+       HERO
+       ============================================ -->
+  <section class="hero" id="topo">
+    <div class="grid-texture"></div>
+    <div class="container">
+      <div class="hero-inner">
+        <div class="axis-rail" aria-hidden="true"></div>
+
+        <div class="hero-content">
+          <div class="hero-text">
+            <span class="eyebrow">Análise de Dados &amp; Automação</span>
+            <h1>Jhonathan Almeida</h1>
+            <p class="hero-role">Objetivo: <span>Analista de Dados e indicadores</span></p>
+            <p class="hero-lead">
+              Transformo planilhas soltas e processos manuais em dashboards e fluxos automatizados
+              que respondem perguntas de negócio. Possuo conhecimentos em Power BI, SQL, Python e automação
+              com N8N, sempre com o objetivo de deixar o dado fácil de entender e fácil de agir.
+            </p>
+            <div class="hero-actions">
+              <a href="#projetos" class="btn btn-primary">
+                Ver projetos
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12H19" stroke-linecap="round"/><path d="M13 6L19 12L13 18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/in/jhonathan-almeida" target="_blank" rel="noopener" class="btn btn-ghost">
+                LinkedIn
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a href="https://github.com/Jhon-Mota" target="_blank" rel="noopener" class="btn btn-ghost">
+                GitHub
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <svg viewBox="0 0 300 190" width="300" height="190">
+              <line x1="0" y1="150" x2="300" y2="150" stroke="var(--border)" stroke-width="1"/>
+              <rect class="bar" x="20"  y="90"  width="28" height="60" rx="3" fill="var(--text-tertiary)" opacity="0.55"/>
+              <rect class="bar" x="70"  y="65"  width="28" height="85" rx="3" fill="var(--text-tertiary)" opacity="0.55"/>
+              <rect class="bar" x="120" y="100" width="28" height="50" rx="3" fill="var(--text-tertiary)" opacity="0.55"/>
+              <rect class="bar" x="170" y="45"  width="28" height="105" rx="3" fill="var(--text-tertiary)" opacity="0.55"/>
+              <rect class="bar" x="220" y="75"  width="28" height="75" rx="3" fill="var(--text-tertiary)" opacity="0.55"/>
+              <rect class="bar" x="252" y="20"  width="28" height="130" rx="3" fill="var(--accent)"/>
+              <polyline class="trend-line" points="34,88 84,63 134,98 184,43 234,73 266,18" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="4 5" opacity="0.8"/>
+              <circle class="pulse-dot" cx="266" cy="18" r="5" fill="var(--accent)"/>
+            </svg>
+            <p class="chart-caption">POWER BI · SQL · KPIs · LOOKER STUDIO · PACOTE OFFICE · EXCEL · GOOGLE SHEETS · GOOGLE DOCS</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SOBRE MIM
+       ============================================ -->
+  <section id="sobre">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Sobre</span>
+        <h2>Sobre mim</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            Em minha trajetória, atuei em processos administrativos, como aprendiz, e passou por suporte a sistemas, atendimento N1/Help Desk, ajuste
+            fino de processos e ITSM como estagiário e foi se inclinando cada vez mais para dados: entender o
+            que uma planilha realmente está dizendo, montar a modelagem certa e construir o painel
+            que tira alguém da dúvida na hora de decidir.
+          </p>
+          <p>
+            Ao longo do caminho, passei por um estágio com processos de ETL, implantação de
+            sistemas e integrações envolvendo IA. Hoje sigo construindo projetos próprios, de
+            dashboards comerciais a automações de e-mail e triagem, para consolidar na prática o
+            que estudo em SQL, Power BI e Excel.
+          </p>
+        </div>
+
+        <div class="reveal">
+          <p class="badge-panel-title">Ferramentas &amp; competências</p>
+          <div class="badge-list">
+            <span class="badge">SQL</span>
+            <span class="badge">Python</span>
+            <span class="badge">Power BI</span>
+            <span class="badge">DAX</span>
+            <span class="badge">Power Query</span>
+            <span class="badge">Excel</span>
+            <span class="badge">Looker Studio</span>
+            <span class="badge">N8N · Automação</span>
+            <span class="badge">ETL</span>
+            <span class="badge">Integrações via API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       PROJETOS
+       ============================================ -->
+  <section id="projetos">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Projetos</span>
+        <h2>O que eu construí</h2>
+        <p>Dashboards em Power BI aplicados a diferentes frentes de negócio: vendas, compras e RH, cada um partindo de dados brutos até uma visão pronta para decisão e automações
+          construídas na plataforma N8N.</p>
+      </div>
+
+      <div class="project-grid">
+
+        <!-- Projeto 1 -->
+        <article class="project-card reveal">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M4 20V10" stroke-linecap="round"/>
+              <path d="M10 20V4" stroke-linecap="round"/>
+              <path d="M16 20V13" stroke-linecap="round"/>
+              <path d="M4 20H20" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>Dashboard Comercial de Vendas</h3>
+          <p>Painel de vendas com visão consolidada de receita, total de pedidos, ticket médio e base de clientes pensado para leitura rápida por quem decide.</p>
+          <div class="stack-row">
+            <span class="stack-tag">POWER BI</span>
+            <span class="stack-tag">DAX</span>
+            <span class="stack-tag">MODELAGEM DE DADOS</span>
+          </div>
+          <a class="project-link" href="https://github.com/Jhon-Mota/Dashboard-Comercial" target="_blank" rel="noopener">
+            Ver repositório
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+        <!-- Projeto 2 -->
+        <article class="project-card reveal">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M4 7L12 3L20 7L12 11L4 7Z" stroke-linejoin="round"/>
+              <path d="M4 12L12 16L20 12" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 17L12 21L20 17" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Dashboard de Compras</h3>
+          <p>Cruza fornecedores, matérias-primas e valores investidos, com filtro dinâmico por matéria-prima e ranking dos maiores fornecedores.</p>
+          <div class="stack-row">
+            <span class="stack-tag">POWER BI</span>
+            <span class="stack-tag">DAX</span>
+            <span class="stack-tag">RELACIONAMENTOS</span>
+          </div>
+          <a class="project-link" href="https://github.com/Jhon-Mota/Dashboard-de-compras" target="_blank" rel="noopener">
+            Ver repositório
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+        <!-- Projeto 3 -->
+        <article class="project-card reveal">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="12" cy="12" r="8.4"/>
+              <path d="M12 3.6V12L17 15" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Dashboard de KPIs de RH</h3>
+          <p>Monitoramento de indicadores de Recursos Humanos — banco de horas, faltas, atrasos, distribuição por gênero e custo de vale-refeição — segmentável por departamento.</p>
+          <div class="stack-row">
+            <span class="stack-tag">POWER BI DESKTOP</span>
+            <span class="stack-tag">DAX</span>
+            <span class="stack-tag">FONTE CSV</span>
+          </div>
+          <a class="project-link" href="https://github.com/Jhon-Mota/Dashboard-KPI-s-RH" target="_blank" rel="noopener">
+            Ver repositório
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+
+        <!-- Projeto 4 -->
+         <article class="project-card reveal">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="12" cy="12" r="8.4"/>
+              <path d="M12 3.6V12L17 15" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Agente de RH — Triagem e Pontuação de Currículos</h3>
+          <p>Agente de IA desenvolvido no N8N para triagem automatizada de candidatos a vagas de TI. Analisa currículos enviados e atribui uma pontuação estruturada com base em critérios objetivos de experiência, formação e palavras-chave relevantes.</p>
+          <div class="stack-row">
+            <span class="stack-tag">N8N</span>
+            <span class="stack-tag">IA</span>
+            <span class="stack-tag">Low-Code</span>
+          </div>
+          <a class="project-link" href="https://github.com/Jhon-Mota/Agente_de_RH_Triagem_e_Pontuacao_de_Curriculos" target="_blank" rel="noopener">
+            Ver repositório
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+        <!-- Projeto 5 -->
+         <article class="project-card reveal">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="12" cy="12" r="8.4"/>
+              <path d="M12 3.6V12L17 15" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Sistema de chamados com N8N</h3>
+          <p>O workflow no n8n consiste no recebimento de chamados por meio de um formulário, no qual o usuário informa seu nome, e-mail, seleciona o assunto do chamado, o setor responsável pelo atendimento e descreve a solicitação no campo de descrição. Os chamados podem ser classificados como Compras, Manutenção, Nota Fiscal, Acessos ou Outro, e direcionados aos setores de T.I., Comercial, Financeiro, Compras ou Manutenção, conforme a necessidade.</p>
+          <div class="stack-row">
+            <span class="stack-tag">N8N</span>
+            <span class="stack-tag">IA</span>
+            <span class="stack-tag">Low-Code</span>
+          </div>
+          <a class="project-link" href="https://github.com/Jhon-Mota/Sistema_de_chamados_construido_com_N8N" target="_blank" rel="noopener">
+            Ver repositório
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+        <!-- Projeto 6 -->
+         <article class="project-card reveal">
+          <div class="project-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="12" cy="12" r="8.4"/>
+              <path d="M12 3.6V12L17 15" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Sistema de notificacao de concursos com N8N</h3>
+          <p>O workflow no n8n coleta concursos públicos do site PCI Concursos a cada 4 dias, filtra as oportunidades do estado de São Paulo e envia um e-mail com os resultados.</p>
+          <div class="stack-row">
+            <span class="stack-tag">N8N</span>
+            <span class="stack-tag">Workflow</span>
+            <span class="stack-tag">Low-Code</span>
+          </div>
+          <a class="project-link" href="https://github.com/Jhon-Mota/Sistema_de_notificacao_de_concursos_com_N8N" target="_blank" rel="noopener">
+            Ver repositório
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       EXPERIÊNCIA
+       ============================================ -->
+  <section id="experiencia">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Trajetória</span>
+        <h2>Experiência Profissional</h2>
+      </div>
+
+      <div class="timeline reveal">
+
+
+        <div class="timeline-item">
+          <span class="timeline-period">Set/2025 - Mar/2026</span>
+          <h3>Estagiário em Automações</h3>
+          <p class="timeline-company">Atende Direito</p>
+          <p class="desc">
+            Atuação na consulta e organização de dados no sistema da empresa, com transferência e atualização das informações em planilhas. Desenvolvimento de fluxos em plataformas low-code para automatização do envio de mensagens e execução de ações, além de alterações e configurações em CRM e pipelines de atendimento. Criação de templates de mensagens para utilização com a API oficial do WhatsApp e configuração de disparos em massa para comunicação de eventos. Também realizava a verificação de pendências nos atendimentos e o atendimento ao cliente por meio de chat.
+          </p>
+        </div>
+
+        <div class="timeline-item">
+          <span class="timeline-period">Jan/2024 - Mar/2025</span>
+          <h3>Aprendiz Administrativo</h3>
+          <p class="timeline-company">Aché Laboratórios Farmacêuticos</p>
+          <p class="desc">
+            Atuação na criação, organização e manutenção de documentos e planilhas, incluindo a inserção e validação de dados em planilhas do Excel. Responsável pela manutenção dos indicadores da planta piloto, bem como pela criação e atualização de dashboards no Power BI utilizados em apresentações gerenciais para diretores. Realização da validação de dados registrados em logbooks e apoio nas rotinas diárias do laboratório, contribuindo também com atividades de outros departamentos quando necessário. Responsável, ainda, pela entrega de documentos e produtos diretamente aos respectivos responsáveis.
+          </p>
+        </div>
+        
+        </div>
+
+
+        
+      <div class="knowledge-block reveal">
+        <p class="badge-panel-title">Conhecimentos</p>
+        <div class="badge-list">
+          <span class="badge">KPIs</span>
+          <span class="badge">Dados</span>
+          <span class="badge">Processos</span>
+          <span class="badge">Pacote Office</span>
+          <span class="badge">Excel</span>
+          <span class="badge">Google Docs</span>
+          <span class="badge">Google Sheets</span>
+          <span class="badge">SQL</span>
+          <span class="badge">Looker Studio</span>
+          <span class="badge">Power BI</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CONTATO / FOOTER
+       ============================================ -->
+  <footer id="contato" class="contact">
+    <div class="container">
+      <div class="contact-panel reveal">
+        <div>
+          <span class="eyebrow">Contato</span>
+          <h2>Vamos conversar</h2>
+          <p>
+            Estou em busca de oportunidades como Analista de Dados, unindo automação, modelagem
+            e visualização para apoiar decisões de negócio. Se meu perfil fizer sentido para sua
+            equipe, será um prazer conversar.
+          </p>
+        </div>
+
+        <div class="contact-links">
+          <a class="contact-link" href="https://www.linkedin.com/in/jhonathan-almeida" target="_blank" rel="noopener">
+            <span class="contact-link-label">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M6.94 8.5H3.56V20.4H6.94V8.5Z" fill="currentColor"/><path d="M5.25 7.02C6.35 7.02 7.24 6.13 7.24 5.03C7.24 3.94 6.35 3.05 5.25 3.05C4.15 3.05 3.26 3.94 3.26 5.03C3.26 6.13 4.15 7.02 5.25 7.02Z" fill="currentColor"/><path d="M13.02 8.5H9.79V20.4H13.13V14.3C13.13 12.66 13.44 11.07 15.47 11.07C17.47 11.07 17.5 12.94 17.5 14.4V20.4H20.84V13.73C20.84 10.85 20.22 8.23 16.86 8.23C15.25 8.23 14.17 9.11 13.72 9.94H13.68L13.02 8.5Z" fill="currentColor"/></svg>
+              linkedin.com/in/jhonathan-almeida
+            </span>
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="contact-link" href="https://github.com/Jhon-Mota" target="_blank" rel="noopener">
+            <span class="contact-link-label">
+              <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.48 2 2 6.58 2 12.21C2 16.72 4.87 20.54 8.84 21.9C9.34 22 9.52 21.68 9.52 21.41C9.52 21.17 9.51 20.31 9.51 19.41C6.73 20.02 6.14 18.15 6.14 18.15C5.68 16.96 5.03 16.65 5.03 16.65C4.12 16.02 5.1 16.03 5.1 16.03C6.1 16.1 6.63 17.08 6.63 17.08C7.5 18.62 8.92 18.17 9.48 17.92C9.57 17.27 9.83 16.83 10.11 16.58C7.9 16.33 5.57 15.46 5.57 11.55C5.57 10.42 5.97 9.5 6.65 8.78C6.54 8.53 6.19 7.47 6.75 6.04C6.75 6.04 7.62 5.76 9.5 7.06C10.29 6.84 11.15 6.72 12 6.72C12.85 6.72 13.71 6.84 14.5 7.06C16.38 5.76 17.25 6.04 17.25 6.04C17.81 7.47 17.46 8.53 17.35 8.78C18.03 9.5 18.43 10.42 18.43 11.55C18.43 15.47 16.1 16.33 13.87 16.57C14.23 16.88 14.55 17.5 14.55 18.44C14.55 19.79 14.54 20.97 14.54 21.41C14.54 21.68 14.72 22.01 15.23 21.9C19.19 20.53 22 16.72 22 12.21C22 6.58 17.52 2 12 2Z" fill="currentColor"/></svg>
+              github.com/Jhon-Mota
+            </span>
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7" stroke-linecap="round"/><path d="M7 7H17V17" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span class="footer-mark">© 2026 Jhonathan Almeida</span>
+        <span>Construído com atenção aos detalhes — do jeito que um bom dashboard deveria ser.</span>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+  // Navbar blur on scroll
+  const navbar = document.getElementById('navbar');
+  const onScroll = () => {
+    if (window.scrollY > 8) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  };
+  document.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Mobile menu toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const mobilePanel = document.getElementById('mobilePanel');
+  menuToggle.addEventListener('click', () => {
+    const isOpen = mobilePanel.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobilePanel.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      mobilePanel.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
